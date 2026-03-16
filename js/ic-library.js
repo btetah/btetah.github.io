@@ -1,17 +1,5 @@
-/* ============================================
-   IC Library - 74xx Series IC Definitions
-   DTK02 Kit includes: 7400, 7402, 7404, 7408,
-   7432, 7486, 7447, 7490, 7495, 74107 (×2)
-   ============================================ */
+// لا تلعب بالسورس ياحيبي
 
-/**
- * Each IC definition includes:
- * - name: IC part number
- * - description: Brief description
- * - pins: Number of pins (14 or 16)
- * - pinout: Array describing each pin's function
- * - simulate: Function that computes outputs from inputs
- */
 
 // eslint-disable-next-line no-unused-vars
 var ICLibrary = {
