@@ -1,4 +1,4 @@
-// Highly advanced drag-and-drop alignment editor for on-the-fly photo realignment
+// لا تلعب بالسورس ياحيبي
 (function() {
     const ALIGN_STORAGE_KEY = 'dtk02-align-overrides-v1';
     let listenersAttached = false;
