@@ -7,10 +7,10 @@ body { margin: 0; background: #1a1b1d; font-family: -apple-system, sans-serif; c
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #111214;
-    border: 1px solid #2f3338;
+    background: transparent;
+    border: 0;
     border-radius: 10px;
-    padding: 10px;
+    padding: 0;
 }
 
 #board-wrapper {
@@ -18,10 +18,10 @@ body { margin: 0; background: #1a1b1d; font-family: -apple-system, sans-serif; c
     width: 100%;
     max-width: calc((100vh - 140px) * (1481 / 1109));
     margin: 0 auto;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.9);
-    border: 3px solid #222;
-    border-radius: 8px;
-    background: #5a5d6a; /* Fallback chassis color */
+    box-shadow: none;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
     aspect-ratio: 1481 / 1109; /* Map strictly to reference image */
     overflow: visible;
 }
@@ -32,6 +32,7 @@ body { margin: 0; background: #1a1b1d; font-family: -apple-system, sans-serif; c
     top: 0; left: 0;
     width: 100%; height: 100%;
     display: block;
+    background: transparent !important;
     object-fit: fill; /* Safe because wrapper bounds match natural image aspect ratio */
     pointer-events: none; /* Let clicks pass to overlay where needed */
 }
