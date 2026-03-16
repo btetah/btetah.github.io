@@ -48,6 +48,27 @@ open index.html
 npx serve .
 ```
 
+## Desktop App (Electron)
+
+```bash
+# Run as desktop app
+npm run desktop
+```
+
+## Build Windows EXE
+
+On a Windows machine:
+
+```bash
+npm install
+npm run dist:win
+```
+
+Generated installer files are placed in `dist/`.
+
+This repository also includes a GitHub Actions workflow at `.github/workflows/build-windows-exe.yml`.
+You can run it from the Actions tab (`Build Windows EXE`) and download the EXE artifacts directly.
+
 ## Project Structure
 
 ```

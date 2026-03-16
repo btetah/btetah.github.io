@@ -2,10 +2,12 @@
   "name": "dtk02-simulator",
   "version": "1.0.0",
   "description": "Web-based simulator for the DTK02 Digital IC Trainer Kit",
-  "main": "index.html",
+  "main": "electron/main.js",
   "scripts": {
     "start": "npx serve .",
-    "test": "npx jest --config jest.config.js"
+    "test": "npx jest --config jest.config.js",
+    "desktop": "electron .",
+    "dist:win": "electron-builder --win nsis --x64"
   },
   "keywords": [
     "digital-logic",
@@ -15,8 +17,39 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "electron": "^41.0.2",
+    "electron-builder": "^26.8.1",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",
     "jsdom": "^29.0.0"
+  },
+  "build": {
+    "appId": "com.btetah.dtk02simulator",
+    "productName": "DTK02 Digital IC Trainer Kit",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*",
+      "logic/**/*",
+      "css/**/*",
+      "js/**/*",
+      "index.html",
+      "dtk02-reference.jpg",
+      "dtk02-reference.png",
+      "dtk02-reference.pretrim.jpg",
+      "dtk02-referenceafterremove.png",
+      "README.md"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    }
   }
 }
