@@ -21,6 +21,98 @@ document.addEventListener('DOMContentLoaded', () => {
     const switchLastToggleAt = {};
     const SWITCH_DEBOUNCE_MS = 35;
 
+    function closeICPicker() {
+        const modal = document.getElementById('ic-picker-modal');
+        if (modal) modal.remove();
+    }
+
+    function createPinoutHtml(icDef) {
+        const pinout = Array.isArray(icDef.pinout) ? icDef.pinout : [];
+        if (!pinout.length) return '<p class="ic-picker-empty">No pin data</p>';
+        return pinout.map((p) => {
+            const pinNo = p.pin != null ? p.pin : '-';
+            const pinName = p.name || 'N/A';
+            const pinType = p.type || 'n/a';
+            return `<li><span>${pinNo}</span><strong>${pinName}</strong><em>${pinType}</em></li>`;
+        }).join('');
+    }
+
+    function showICPicker(socketEl) {
+        closeICPicker();
+
+        const pinCount = parseInt(socketEl.dataset.pins, 10);
+        const socketId = socketEl.dataset.socketId;
+        const candidates = Object.keys(ICLibrary)
+            .map((name) => ICLibrary[name])
+            .filter((icDef) => icDef && icDef.pins === pinCount)
+            .sort((a, b) => String(a.name).localeCompare(String(b.name)));
+
+        if (!candidates.length) {
+            alert(`No ICs found for ${pinCount}-pin socket.`);
+            return;
+        }
+
+        const modal = document.createElement('div');
+        modal.id = 'ic-picker-modal';
+        modal.className = 'ic-picker-modal';
+
+        const cardsHtml = candidates.map((icDef) => {
+            const title = icDef.name || 'Unknown';
+            const desc = icDef.description || 'No description';
+            return `
+                <button type="button" class="ic-picker-card" data-ic-name="${title}" data-search="${title} ${desc}">
+                    <div class="ic-picker-chip">${title}</div>
+                    <div class="ic-picker-title">${title}</div>
+                    <div class="ic-picker-desc">${desc}</div>
+                    <details class="ic-picker-pins">
+                        <summary>Pins</summary>
+                        <ul>${createPinoutHtml(icDef)}</ul>
+                    </details>
+                </button>
+            `;
+        }).join('');
+
+        modal.innerHTML = `
+            <div class="ic-picker-dialog" role="dialog" aria-modal="true" aria-label="IC picker">
+                <div class="ic-picker-header">
+                    <h3>Select IC for ${pinCount}-pin socket</h3>
+                    <button type="button" class="ic-picker-close" aria-label="Close">x</button>
+                </div>
+                <input type="text" class="ic-picker-search" placeholder="Search IC name..." />
+                <div class="ic-picker-grid">${cardsHtml}</div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeICPicker();
+        });
+
+        modal.querySelector('.ic-picker-close').addEventListener('click', closeICPicker);
+
+        const searchInput = modal.querySelector('.ic-picker-search');
+        const cards = Array.from(modal.querySelectorAll('.ic-picker-card'));
+
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.trim().toLowerCase();
+            cards.forEach((card) => {
+                const text = (card.dataset.search || '').toLowerCase();
+                card.style.display = !q || text.includes(q) ? '' : 'none';
+            });
+        });
+
+        cards.forEach((card) => {
+            card.addEventListener('click', () => {
+                const icName = card.dataset.icName;
+                const icDef = ICLibrary[icName];
+                if (!icDef || icDef.pins !== pinCount) return;
+                Breadboard.placeIC(icName, socketId);
+                closeICPicker();
+            });
+        });
+    }
+
     // File input to let the user override the image at runtime
     document.getElementById('board-upload').addEventListener('change', function(e){
         if(e.target.files && e.target.files[0]){
@@ -92,13 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if(!Simulator.isPowerOn()) { alert("Please turn power on."); return; }
             let id = sock.dataset.socketId;
             if(!document.getElementById('ic-visual-' + id)) {
-                let icName = prompt(`Enter IC name (e.g. 7400, 7404) for ${sock.dataset.pins}-pin socket:`);
-                if(icName && ICLibrary[icName]) {
-                    if(ICLibrary[icName].pins !== parseInt(sock.dataset.pins)) {
-                       alert("Pin mismatch!"); return;
-                    }
-                    Breadboard.placeIC(icName, id);
-                } else if(icName) { alert("IC not found in library."); }
+                showICPicker(sock);
             }
         });
     });
