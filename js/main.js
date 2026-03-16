@@ -1,4 +1,4 @@
-// Central application hub tying logic to interface
+// لا تلعب بالسورس ياحيبي
 window.appState = { wireMode: true, deleteMode: false, probeMode: false };
 
 document.addEventListener('DOMContentLoaded', () => {
