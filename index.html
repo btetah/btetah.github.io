@@ -3,55 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DTK-02 Digital IC Trainer Simulation Layer</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>btetah.me</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            background: #101114;
+            color: #f3f4f6;
+            font-family: -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif;
+        }
+        .card {
+            width: min(92vw, 560px);
+            background: #181a1f;
+            border: 1px solid #2b2f36;
+            border-radius: 14px;
+            padding: 26px;
+            box-shadow: 0 14px 35px rgba(0,0,0,0.45);
+            text-align: center;
+        }
+        a {
+            display: inline-block;
+            margin-top: 14px;
+            background: #1f6feb;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+            padding: 10px 16px;
+            border-radius: 8px;
+        }
+    </style>
 </head>
 <body>
-    <div id="app-container">
-        <!-- Toolbar Layer -->
-        <div id="toolbar">
-            <button class="tool-btn active" id="btn-wire">Wire Mode</button>
-            <button class="tool-btn" id="btn-delete">Delete Wire</button>
-            <button class="tool-btn" id="btn-probe">Probe Mode</button>
-            <button class="tool-btn" id="btn-undo">Undo</button>
-            <button class="tool-btn" id="btn-redo">Redo</button>
-            <button class="tool-btn" id="btn-clear">Clear Wires</button>
-            <button class="tool-btn" id="btn-reset">Reset Everything</button>
-            <button class="tool-btn editor-btn" id="btn-edit-mode" title="Allows you to manually fix alignment on your exact board photo">Editor</button>
-            
-            <label class="tool-btn custom-upload" style="background: #27ae60;">
-                Load Board Photo
-                <input type="file" id="board-upload" style="display:none;" accept="image/*">
-            </label>
-
-            <span id="status-msg" class="status-text">Power ON / Wire Mode</span>
-        </div>
-
-        <!-- Structural Physical UI Layer -->
-        <div id="board-scroll">
-            <div id="board-wrapper">
-                <!-- Loading the requested background image -->
-                <img src="dtk02-reference.jpg" id="board-img" alt="DTK-02 Board" 
-                     onerror="this.onerror=null;this.src='dtk02-reference.png';this.style.background='#5a5d6a';">
-                
-                <!-- Where JS spits out all the clickable connection points -->
-                <div id="ui-overlay"></div>
-                <!-- Wires are drawn natively as SVGs across percentages -->
-                <svg id="wire-layer"></svg>
-            </div>
-        </div>
-        
-    </div>
-
-    <!-- The original digital logic simulator -->
-    <script src="js/ic-library.js"></script>
-    <script src="js/simulator.js"></script>
-    
-    <!-- Photorealistic layer logic -->
-    <script src="js/config.js"></script>
-    <script src="js/wiring.js"></script>
-    <script src="js/layout.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/editor.js"></script>
+    <main class="card">
+        <h1>btetah.me</h1>
+        <p>The DTK-02 simulator is available under the requested subpath.</p>
+        <a href="/logic/">Open /logic/</a>
+    </main>
 </body>
 </html>
