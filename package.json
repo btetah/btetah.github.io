@@ -26,6 +26,7 @@
   "build": {
     "appId": "com.btetah.dtk02simulator",
     "productName": "DTK02 Digital IC Trainer Kit",
+    "compression": "maximum",
     "directories": {
       "output": "dist"
     },

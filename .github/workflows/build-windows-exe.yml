@@ -30,4 +30,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dtk02-windows-exe
-          path: dist/*
+          path: |
+            dist/*Setup*.exe
+            dist/*.blockmap
