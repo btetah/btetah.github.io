@@ -317,19 +317,28 @@ const Breadboard = (function() {
         // Render IC visually
         let hitbox = document.getElementById('ic-socket-' + slotId);
         if(hitbox) {
+            const overlay = document.getElementById('ui-overlay');
+            const oRect = overlay.getBoundingClientRect();
+            const hRect = hitbox.getBoundingClientRect();
+
+            const leftPct = ((hRect.left - oRect.left) / oRect.width) * 100;
+            const topPct = ((hRect.top - oRect.top) / oRect.height) * 100;
+            const widthPct = (hRect.width / oRect.width) * 100;
+            const heightPct = (hRect.height / oRect.height) * 100;
+
             let vis = document.createElement('div');
             vis.className = 'ic-placed';
-            vis.style.left = hitbox.style.left;
-            vis.style.top = hitbox.style.top;
-            vis.style.width = hitbox.style.width;
-            vis.style.height = hitbox.style.height;
+            vis.style.left = leftPct + '%';
+            vis.style.top = topPct + '%';
+            vis.style.width = widthPct + '%';
+            vis.style.height = heightPct + '%';
             vis.id = 'ic-visual-' + slotId;
             vis.innerHTML = `<div class="notch"></div>${icName}`;
-            vis.style.transform = hitbox.style.transform;
+            vis.style.transform = 'none';
             vis.addEventListener('click', () => {
                 if(confirm(`Remove ${icName}?`)) removeICBySlot(slotId);
             });
-            document.getElementById('ui-overlay').appendChild(vis);
+            overlay.appendChild(vis);
         }
 
         Simulator.simulate();
