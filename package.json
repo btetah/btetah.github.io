@@ -1,0 +1,22 @@
+{
+  "name": "dtk02-simulator",
+  "version": "1.0.0",
+  "description": "Web-based simulator for the DTK02 Digital IC Trainer Kit",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "test": "npx jest --config jest.config.js"
+  },
+  "keywords": [
+    "digital-logic",
+    "simulator",
+    "dtk02",
+    "ic-trainer"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^30.3.0",
+    "jest-environment-jsdom": "^30.3.0",
+    "jsdom": "^29.0.0"
+  }
+}
