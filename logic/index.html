@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DTK-02 Digital IC Trainer Simulation Layer</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div id="app-container">
+        <div id="toolbar">
+            <button class="tool-btn active" id="btn-wire">Wire Mode</button>
+            <button class="tool-btn" id="btn-delete">Delete Wire</button>
+            <button class="tool-btn" id="btn-probe">Probe Mode</button>
+            <button class="tool-btn" id="btn-undo">Undo</button>
+            <button class="tool-btn" id="btn-redo">Redo</button>
+            <button class="tool-btn" id="btn-clear">Clear Wires</button>
+            <button class="tool-btn" id="btn-reset">Reset Everything</button>
+            <button class="tool-btn editor-btn" id="btn-edit-mode" title="Allows you to manually fix alignment on your exact board photo">Editor</button>
+            <label class="tool-btn custom-upload" style="background: #27ae60;">
+                Load Board Photo
+                <input type="file" id="board-upload" style="display:none;" accept="image/*">
+            </label>
+
+            <span id="status-msg" class="status-text">Power ON / Wire Mode</span>
+        </div>
+
+        <div id="board-scroll">
+            <div id="board-wrapper">
+                <img src="../dtk02-reference.jpg" id="board-img" alt="DTK-02 Board"
+                     onerror="this.onerror=null;this.src='../dtk02-reference.png';this.style.background='#5a5d6a';">
+                <div id="ui-overlay"></div>
+                <svg id="wire-layer"></svg>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/ic-library.js"></script>
+    <script src="../js/simulator.js"></script>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/wiring.js"></script>
+    <script src="../js/layout.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/editor.js"></script>
+</body>
+</html>
