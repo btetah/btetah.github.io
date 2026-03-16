@@ -1,8 +1,5 @@
-/* ============================================
-   Simulator - Core Simulation Engine
-   ============================================ */
+// لا تلعب بالسورس ياحيبي
 
-// eslint-disable-next-line no-unused-vars
 var Simulator = (function() {
     'use strict';
 
@@ -12,26 +9,20 @@ var Simulator = (function() {
     var clockTimerId = null;
     var clockOutputConn = 'clock-output-10';
 
-    // Manual pulser outputs: LHL rests LOW, HLH rests HIGH.
     var pulserLState = 0;
     var pulserHState = 1;
     var pulserTimerId = null;
 
     var powerOn = false;
 
-    /**
-     * Run one simulation cycle
-     * Propagates signals from sources through wires and ICs to outputs
-     */
+
     function simulate() {
         if (!powerOn) return;
 
         var ics = Breadboard.getPlacedICs();
 
-        // Build signal map: connId -> value
         var signals = {};
 
-        // Set switch output values
         var switchStates = Components.getAllSwitchStates();
         for (var s = 0; s < switchStates.length; s++) {
             signals['switch-' + s] = switchStates[s];
