@@ -118,31 +118,120 @@ var Simulator = (function() {
      */
     function propagateSignals(signals) {
         var wires = Breadboard.getWires();
-        var changed = true;
-        var iterations = 0;
+        var graph = buildConnectivityGraph(wires);
+        var q = Object.keys(signals);
 
-        while (changed && iterations < 50) {
-            changed = false;
-            iterations++;
+        while (q.length) {
+            var cur = q.shift();
+            var curVal = signals[cur];
+            var neighbors = graph[cur] || [];
 
-            for (var w = 0; w < wires.length; w++) {
-                var wire = wires[w];
-                var fromVal = getSignalValue(signals, wire.from);
-                var toVal = getSignalValue(signals, wire.to);
-
-                if (fromVal !== undefined && toVal === undefined) {
-                    setSignalInNet(signals, wire.to, fromVal);
-                    changed = true;
-                } else if (toVal !== undefined && fromVal === undefined) {
-                    setSignalInNet(signals, wire.from, toVal);
-                    changed = true;
+            for (var i = 0; i < neighbors.length; i++) {
+                var n = neighbors[i];
+                if (signals[n] === undefined) {
+                    signals[n] = curVal;
+                    q.push(n);
                 }
             }
-
-            // Propagate within breadboard rows (internal connections)
-            propagateBreadboardRows(signals);
-            propagateRails(signals);
         }
+    }
+
+    function buildConnectivityGraph(wires) {
+        var graph = Object.create(null);
+
+        function addEdge(a, b) {
+            if (!a || !b || a === b) return;
+            if (!graph[a]) graph[a] = [];
+            if (!graph[b]) graph[b] = [];
+            if (graph[a].indexOf(b) === -1) graph[a].push(b);
+            if (graph[b].indexOf(a) === -1) graph[b].push(a);
+        }
+
+        // Wires are explicit user connections.
+        for (var w = 0; w < wires.length; w++) {
+            addEdge(wires[w].from, wires[w].to);
+        }
+
+        // Breadboard rows: each side is a shared bus (a-e and f-j).
+        var leftCols = ['a', 'b', 'c', 'd', 'e'];
+        var rightCols = ['f', 'g', 'h', 'i', 'j'];
+        for (var r = 1; r <= Breadboard.ROWS; r++) {
+            for (var lc = 1; lc < leftCols.length; lc++) {
+                addEdge('bb-' + r + '-' + leftCols[lc - 1], 'bb-' + r + '-' + leftCols[lc]);
+            }
+            for (var rc = 1; rc < rightCols.length; rc++) {
+                addEdge('bb-' + r + '-' + rightCols[rc - 1], 'bb-' + r + '-' + rightCols[rc]);
+            }
+        }
+
+        // Rails: connected by physical segment only (breaks stay isolated).
+        var railSegments = getRailSegmentsById();
+        var rails = ['top-vcc', 'top-gnd', 'bottom-vcc', 'bottom-gnd'];
+        for (var ridx = 0; ridx < rails.length; ridx++) {
+            var railId = rails[ridx];
+            var segments = railSegments[railId] || [];
+            for (var s = 0; s < segments.length; s++) {
+                var seg = segments[s];
+                for (var k = 1; k < seg.length; k++) {
+                    addEdge(seg[k - 1], seg[k]);
+                }
+            }
+        }
+
+        return graph;
+    }
+
+    function getRailSegmentsById() {
+        var byRail = {
+            'top-vcc': [],
+            'top-gnd': [],
+            'bottom-vcc': [],
+            'bottom-gnd': []
+        };
+
+        if (typeof document === 'undefined' || !document.querySelectorAll) {
+            return byRail;
+        }
+
+        var rails = Object.keys(byRail);
+        for (var r = 0; r < rails.length; r++) {
+            var railId = rails[r];
+            var prefix = 'rail-' + railId + '-';
+            var nodes = Array.prototype.slice.call(document.querySelectorAll('[data-conn^="' + prefix + '"]'));
+            var points = nodes.map(function(el) {
+                var rect = el.getBoundingClientRect();
+                return {
+                    conn: el.dataset.conn,
+                    x: rect.left + (rect.width / 2)
+                };
+            }).sort(function(a, b) { return a.x - b.x; });
+
+            if (!points.length) continue;
+
+            var diffs = [];
+            for (var i = 1; i < points.length; i++) {
+                diffs.push(points[i].x - points[i - 1].x);
+            }
+            var baseStep = 0;
+            if (diffs.length) {
+                var sorted = diffs.slice().sort(function(a, b) { return a - b; });
+                baseStep = sorted[Math.floor(sorted.length / 2)];
+            }
+            var splitThreshold = baseStep > 0 ? (baseStep * 2.6) : Number.POSITIVE_INFINITY;
+
+            var current = [points[0].conn];
+            for (var j = 1; j < points.length; j++) {
+                var gap = points[j].x - points[j - 1].x;
+                if (gap > splitThreshold) {
+                    byRail[railId].push(current);
+                    current = [];
+                }
+                current.push(points[j].conn);
+            }
+            byRail[railId].push(current);
+        }
+
+        return byRail;
     }
 
     /**
