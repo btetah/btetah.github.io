@@ -1,18 +1,10 @@
-/* ============================================
-   Components - UI Components for the Simulator
-   ============================================ */
-
-// eslint-disable-next-line no-unused-vars
+// لا تلعب بالسورس ياحيبي
 var Components = (function() {
     'use strict';
 
     var NUM_SWITCHES = 10;
     var NUM_LEDS = 10;
 
-    /**
-     * Initialize logic input switches (S0-S9)
-     * Each switch has LED indication for both logic high and low
-     */
     function initSwitches(container, onToggle) {
         container.innerHTML = '';
         for (var i = 0; i < NUM_SWITCHES; i++) {
@@ -59,9 +51,7 @@ var Components = (function() {
         }
     }
 
-    /**
-     * Initialize logic output LEDs (L0-L7)
-     */
+
     function initLEDs(container) {
         container.innerHTML = '';
         for (var i = 0; i < NUM_LEDS; i++) {
@@ -76,9 +66,7 @@ var Components = (function() {
         }
     }
 
-    /**
-     * Set LED state
-     */
+
     function setLED(index, value) {
         var led = document.getElementById('led-' + index);
         var stateEl = document.getElementById('led-state-' + index);
@@ -95,18 +83,14 @@ var Components = (function() {
         }
     }
 
-    /**
-     * Get switch state
-     */
+
     function getSwitchState(index) {
         var toggle = document.querySelector('[data-switch="' + index + '"]');
         if (!toggle) return 0;
         return toggle.getAttribute('data-state') === 'on' ? 1 : 0;
     }
 
-    /**
-     * Get all switch states as array
-     */
+
     function getAllSwitchStates() {
         var states = [];
         for (var i = 0; i < NUM_SWITCHES; i++) {
@@ -115,9 +99,7 @@ var Components = (function() {
         return states;
     }
 
-    /**
-     * Reset all switches to OFF
-     */
+
     function resetSwitches() {
         for (var i = 0; i < NUM_SWITCHES; i++) {
             var toggle = document.querySelector('[data-switch="' + i + '"]');
@@ -136,20 +118,14 @@ var Components = (function() {
         }
     }
 
-    /**
-     * Reset all LEDs to OFF
-     */
+
     function resetLEDs() {
         for (var i = 0; i < NUM_LEDS; i++) {
             setLED(i, 0);
         }
     }
 
-    /**
-     * Update seven-segment display
-     * @param {number} displayIndex - 0 or 1
-     * @param {Object} segments - {a,b,c,d,e,f,g,dp} each 0 or 1
-     */
+
     function setSevenSegment(displayIndex, segments) {
         var display = document.getElementById('seg-display-' + displayIndex);
         if (!display) return;
@@ -167,9 +143,7 @@ var Components = (function() {
         }
     }
 
-    /**
-     * Clear seven-segment displays
-     */
+
     function clearSevenSegments() {
         var blank = { a: 0, b: 0, c: 0, d: 0, e: 0, f: 0, g: 0, dp: 0 };
         setSevenSegment(0, blank);
@@ -177,9 +151,7 @@ var Components = (function() {
         setSevenSegment(2, blank);
     }
 
-    /**
-     * Populate IC library panel
-     */
+
     function initICLibrary(container, onSelect) {
         container.innerHTML = '';
         var icNames = Object.keys(ICLibrary);
