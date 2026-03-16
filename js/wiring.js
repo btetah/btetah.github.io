@@ -1,4 +1,4 @@
-// Global states mapped seamlessly into the legacy simulator logic
+// لا تلعب بالسورس ياحيبي
 const UIState = { switches: Array(10).fill(0) };
 
 const Components = {
