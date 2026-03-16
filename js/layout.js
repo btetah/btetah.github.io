@@ -1,4 +1,4 @@
-// Generates all interactive UI elements based on percentages
+// لا تلعب بالسورس ياحيبي
 function buildOverlay() {
     const overlay = document.getElementById('ui-overlay');
     overlay.innerHTML = '';
