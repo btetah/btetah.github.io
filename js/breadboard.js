@@ -1,29 +1,23 @@
-/* ============================================
-   Breadboard - Breadboard & Wiring Logic
-   ============================================ */
-
-// eslint-disable-next-line no-unused-vars
+// لا تلعب بالسورس ياحيبي
 var Breadboard = (function() {
     'use strict';
 
-    var ROWS = 63;       // Number of rows per side (630 tie points)
-    var COLS = 5;        // 5 columns per side (a-e, f-j)
-    var RAIL_HOLES = 50; // Power rail holes (100 tie points per distribution strip)
+    var ROWS = 63;      
+    var COLS = 5;      
+    var RAIL_HOLES = 50; 
 
-    var wires = [];          // Array of wire connections
-    var placedICs = [];      // Array of placed ICs
-    var selectedPoint = null; // Currently selected connection point
+    var wires = [];         
+    var placedICs = [];      
+    var selectedPoint = null; 
     var wireMode = false;
     var deleteWireMode = false;
     var wireColorIndex = 0;
     var wireColors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6',
                       '#1abc9c', '#e67e22', '#2980b9', '#27ae60', '#8e44ad'];
 
-    /**
-     * Initialize the breadboard grid
-     */
+
     function init(gridEl, topVccRail, topGndRail, bottomVccRail, bottomGndRail) {
-        // Create column labels
+      
         var colLabelRow = document.createElement('div');
         colLabelRow.className = 'bb-col-labels';
         var labels = ['a', 'b', 'c', 'd', 'e', '', 'f', 'g', 'h', 'i', 'j'];
@@ -35,7 +29,6 @@ var Breadboard = (function() {
         }
         gridEl.appendChild(colLabelRow);
 
-        // Create breadboard rows
         for (var r = 1; r <= ROWS; r++) {
             var rowDiv = document.createElement('div');
             rowDiv.className = 'bb-row';
@@ -45,18 +38,15 @@ var Breadboard = (function() {
             rowLabel.textContent = r;
             rowDiv.appendChild(rowLabel);
 
-            // Left columns (a-e)
             for (var cl = 0; cl < COLS; cl++) {
                 var hole = createHole('bb', r, String.fromCharCode(97 + cl));
                 rowDiv.appendChild(hole);
             }
 
-            // Center gap
             var gap = document.createElement('span');
             gap.className = 'bb-center-gap';
             rowDiv.appendChild(gap);
 
-            // Right columns (f-j)
             for (var cr = 0; cr < COLS; cr++) {
                 var holeR = createHole('bb', r, String.fromCharCode(102 + cr));
                 rowDiv.appendChild(holeR);
@@ -65,7 +55,6 @@ var Breadboard = (function() {
             gridEl.appendChild(rowDiv);
         }
 
-        // Create power rails
         createRailHoles(topVccRail, 'top-vcc');
         createRailHoles(topGndRail, 'top-gnd');
         createRailHoles(bottomVccRail, 'bottom-vcc');
@@ -141,9 +130,7 @@ var Breadboard = (function() {
         }
     }
 
-    /**
-     * Also handle clicks on switch/LED connection points
-     */
+
     function initExternalPoints() {
         var points = document.querySelectorAll('.switch-output-point, .led-input-point');
         for (var i = 0; i < points.length; i++) {
@@ -167,7 +154,6 @@ var Breadboard = (function() {
         wires.push(wire);
         drawWire(wire);
 
-        // Mark holes as connected
         var fromEl = document.querySelector('[data-conn="' + fromConn + '"]');
         var toEl = document.querySelector('[data-conn="' + toConn + '"]');
         if (fromEl) fromEl.classList.add('connected');
@@ -279,9 +265,7 @@ var Breadboard = (function() {
         }
     }
 
-    /**
-     * Place an IC on the breadboard
-     */
+
     function placeIC(icName, startRow) {
         var icDef = ICLibrary[icName];
         if (!icDef) return null;
@@ -289,13 +273,11 @@ var Breadboard = (function() {
         var numPins = icDef.pins;
         var pinsPerSide = numPins / 2;
 
-        // Check if startRow is valid
         if (startRow + pinsPerSide - 1 > ROWS) {
             setStatus('Not enough space on breadboard for this IC at row ' + startRow);
             return null;
         }
 
-        // Check for overlap
         for (var p = 0; p < placedICs.length; p++) {
             var existing = placedICs[p];
             var existingEnd = existing.startRow + existing.pinsPerSide - 1;
@@ -306,7 +288,6 @@ var Breadboard = (function() {
             }
         }
 
-        // Create IC placement
         var placement = {
             id: 'ic-' + Date.now(),
             icName: icName,
@@ -318,14 +299,10 @@ var Breadboard = (function() {
             _state: null      // For sequential ICs
         };
 
-        // Copy IC state if it has one
         if (icDef._state) {
             placement._state = JSON.parse(JSON.stringify(icDef._state));
         }
 
-        // Map pins to breadboard holes
-        // Left side pins (1 to pinsPerSide): column 'e', rows startRow to startRow+pinsPerSide-1
-        // Right side pins (pinsPerSide+1 to numPins): column 'f', rows startRow+pinsPerSide-1 down to startRow
         for (var lp = 0; lp < pinsPerSide; lp++) {
             var pinNum = lp + 1;
             var row = startRow + lp;
@@ -333,7 +310,6 @@ var Breadboard = (function() {
             placement.pins[pinNum] = connId;
             placement.pinValues[pinNum] = 0;
 
-            // Mark hole as occupied
             var holeEl = document.querySelector('[data-conn="' + connId + '"]');
             if (holeEl) holeEl.classList.add('occupied');
         }
@@ -351,7 +327,6 @@ var Breadboard = (function() {
 
         placedICs.push(placement);
 
-        // Render IC visual on breadboard
         renderIC(placement);
 
         setStatus('Placed ' + icName + ' (' + icDef.description + ') at row ' + startRow);
@@ -396,18 +371,15 @@ var Breadboard = (function() {
 
         var ic = placedICs[index];
 
-        // Remove occupied markers
         var pinNums = Object.keys(ic.pins);
         for (var p = 0; p < pinNums.length; p++) {
             var connId = ic.pins[pinNums[p]];
             var holeEl = document.querySelector('[data-conn="' + connId + '"]');
             if (holeEl) holeEl.classList.remove('occupied');
 
-            // Remove wires connected to IC pins
             deleteWiresAt(connId);
         }
 
-        // Remove visual
         var icEl = document.querySelector('[data-ic-id="' + icId + '"]');
         if (icEl) icEl.remove();
 
@@ -423,9 +395,7 @@ var Breadboard = (function() {
         removeIC(placedICs[placedICs.length - 1].id);
     }
 
-    /**
-     * Find the next available row for placing an IC
-     */
+
     function findNextAvailableRow(pinsPerSide) {
         var row = 1;
         while (row + pinsPerSide - 1 <= ROWS) {
@@ -445,9 +415,7 @@ var Breadboard = (function() {
         return -1;
     }
 
-    /**
-     * Get net connections: find all points connected together through wires
-     */
+
     function getNet(connId, visited) {
         if (!visited) visited = {};
         if (visited[connId]) return [];
@@ -463,7 +431,6 @@ var Breadboard = (function() {
             }
         }
 
-        // Also add breadboard internal connections (same row, same side)
         var match = connId.match(/^bb-(\d+)-([a-j])$/);
         if (match) {
             var row = match[1];
@@ -479,7 +446,6 @@ var Breadboard = (function() {
             }
         }
 
-        // Power rail connections (all holes in same rail are connected)
         var railMatch = connId.match(/^rail-(top|bottom)-(vcc|gnd)-(\d+)$/);
         if (railMatch) {
             var position = railMatch[1];
@@ -521,7 +487,6 @@ var Breadboard = (function() {
 
     function resetAll() {
         clearAllWires();
-        // Remove all ICs
         while (placedICs.length > 0) {
             removeIC(placedICs[0].id);
         }
