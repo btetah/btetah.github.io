@@ -1,7 +1,6 @@
-// Exact pixel-perfect coordinate mapping generated directly from the 1481x1109 DTK-02 reference image
+// لا تلعب بالسورس ياحيبي
 const UI_CONFIG = {
-    // Global alignment calibration for all generated elements
-    // Keep zeros/ones for the reference image, tweak these for custom board photos.
+
     alignment: {
         offsetX: 0,
         offsetY: 0,
@@ -9,7 +8,6 @@ const UI_CONFIG = {
         scaleY: 1
     },
 
-    // Shared geometry values to avoid drift from hard-coded layout constants
     geometry: {
         holeSizePercent: 1.2,
         sevenSegWidth: 2.5,
@@ -23,11 +21,9 @@ const UI_CONFIG = {
         icOuterPinOffsetX: 0.8,
         icPowerOffsetY: 2,
         icSocketWidth: 3.6,
-        // 0..16 rows are used in the breadboard generator (17 total levels).
         breadboardRowSteps: 16
     },
 
-    // Precision alignment preset captured from manual calibration.
     alignmentOverrides: {
         "conn:led-9": { "x": 74.4816, "y": 11.0918 },
         "conn:seg-0-h": { "x": 89.4855, "y": 6.85714 },
