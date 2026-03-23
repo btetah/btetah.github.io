@@ -48,10 +48,10 @@
           <div class="icon-box">◈</div>
         </div>
 
-        <p class="progress-text">Installing dtk-02 core components... <strong>(48%)</strong></p>
+        <p class="progress-text">Installing dtk-02 core components... <strong id="progress-pct">(0%)</strong></p>
 
-        <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="48" aria-label="Installation progress">
-          <div class="progress-fill"></div>
+        <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Installation progress">
+          <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
         </div>
       </div>
 
@@ -72,8 +72,7 @@
     </section>
 
     <footer class="wizard-footer">
-      <button type="button" class="btn dim" disabled>&lt; Back</button>
-      <button type="button" id="next-btn" class="btn neon">Next &gt;</button>
+      <button type="button" id="next-btn" class="btn dim" disabled>Next &gt;</button>
       <button type="button" id="cancel-btn" class="btn">Cancel</button>
     </footer>
   </main>
