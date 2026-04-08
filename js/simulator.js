@@ -102,6 +102,14 @@ var Simulator = (function() {
         signals['vcc-12-2'] = 1;
         signals['vcc--12'] = 0;
         signals['vcc--12-2'] = 0;
+
+        // Power rails mirror the trainer's built-in +5V/GND supply so the breadboard is usable without extra jumpers.
+        for (var i = 1; i <= Breadboard.ROWS; i++) {
+            signals['rail-top-vcc-' + i] = 1;
+            signals['rail-bottom-vcc-' + i] = 1;
+            signals['rail-top-gnd-' + i] = 0;
+            signals['rail-bottom-gnd-' + i] = 0;
+        }
     }
 
     /**
