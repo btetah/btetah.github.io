@@ -1,0 +1,417 @@
+/* CSS for Overlay Architecture */
+body { margin: 0; background: #1a1b1d; font-family: -apple-system, sans-serif; color: #fff; }
+#app-container { max-width: 100%; margin: 0 auto; padding: 15px; }
+
+#board-scroll {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    border: 0;
+    border-radius: 10px;
+    padding: 0;
+}
+
+#board-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: calc((100vh - 140px) * (1481 / 1109));
+    margin: 0 auto;
+    box-shadow: none;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    aspect-ratio: 1481 / 1109; /* Map strictly to reference image */
+    overflow: visible;
+}
+
+/* Image acts as the absolute structural template */
+#board-img {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: block;
+    background: transparent !important;
+    object-fit: fill; /* Safe because wrapper bounds match natural image aspect ratio */
+    pointer-events: none; /* Let clicks pass to overlay where needed */
+}
+
+/* SVG bounds identical to the image so percentage coordinates map 1:1 */
+#wire-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+.board-credit {
+    position: absolute;
+    right: -2.4%;
+    bottom: 1.1%;
+    z-index: 25;
+    min-height: 24px;
+    max-width: 42%;
+    display: flex;
+    align-items: center;
+    padding: clamp(0.24rem, 0.42vw, 0.48rem) clamp(0.34rem, 0.56vw, 0.6rem);
+    border-radius: 6px;
+    border: 1px solid rgba(58, 67, 84, 0.95);
+    background: rgba(0, 0, 0, 0.9);
+    color: #d8dfef;
+    font-size: clamp(8px, 0.62vw, 11px);
+    letter-spacing: 0.12px;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: 0 5px 14px rgba(0,0,0,0.4);
+    pointer-events: none;
+}
+
+@media (max-width: 1360px) {
+    .board-credit {
+        right: -1.4%;
+        bottom: 0.8%;
+        max-width: 38%;
+    }
+}
+
+@media (max-width: 1120px) {
+    .board-credit {
+        right: 0.3%;
+        bottom: 0.5%;
+        max-width: 34%;
+        border-radius: 5px;
+        border-color: rgba(58, 67, 84, 0.8);
+        background: rgba(0, 0, 0, 0.82);
+    }
+}
+
+@media (max-width: 920px) {
+    .board-credit {
+        right: 0.7%;
+        bottom: 0.35%;
+        max-width: 30%;
+        font-size: clamp(7px, 0.68vw, 9px);
+    }
+}
+.wire-drawn { pointer-events: none; }
+.wire-drawn .wire-sleeve {
+    stroke: rgba(16, 16, 16, 0.62);
+    stroke-width: 6.4px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: stroke;
+    filter: drop-shadow(0 1px 1.3px rgba(0,0,0,0.55));
+    transition: stroke-width 0.12s ease, opacity 0.12s ease, filter 0.12s ease;
+}
+.wire-drawn .wire-main {
+    stroke-width: 3.6px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: stroke;
+    opacity: 0.98;
+    transition: stroke-width 0.12s ease, opacity 0.12s ease, filter 0.12s ease;
+}
+.wire-drawn .wire-spec {
+    stroke: rgba(255,255,255,0.22);
+    stroke-width: 1.05px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+    opacity: 0.85;
+    transition: opacity 0.12s ease;
+}
+.wire-drawn .wire-cap {
+    stroke: rgba(15,15,15,0.65);
+    stroke-width: 0.8px;
+    pointer-events: stroke;
+    transition: r 0.12s ease, filter 0.12s ease;
+}
+
+.wire-drawn:hover .wire-sleeve {
+    stroke-width: 7.2px;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.72));
+}
+.wire-drawn:hover .wire-main {
+    stroke-width: 4.4px;
+    opacity: 1;
+}
+.wire-drawn:hover .wire-spec {
+    opacity: 0.95;
+}
+.wire-drawn:hover .wire-cap {
+    r: 2.35px;
+}
+
+.wire-drawn.wire-highlight .wire-sleeve {
+    stroke: rgba(255, 196, 0, 0.58);
+    stroke-width: 7.8px;
+    filter: drop-shadow(0 0 5px rgba(255,227,0,0.88));
+}
+.wire-drawn.wire-highlight .wire-main {
+    stroke-width: 4.9px;
+    filter: drop-shadow(0 0 3.5px rgba(255,227,0,0.75));
+}
+.wire-drawn.wire-highlight .wire-spec {
+    opacity: 1;
+}
+
+/* The HTML overlay bounds */
+#ui-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+.interactive { pointer-events: auto; position: absolute; transform: translate(-50%, -50%); }
+
+/* Holes have no background so they don't block the visual photo texture. We only highlight on hover */
+.hole {
+    width: 1.4%; 
+    aspect-ratio: 1; 
+    border-radius: 50%; 
+    cursor: crosshair;
+    background: transparent; 
+}
+.hole:hover { background: rgba(0, 255, 255, 0.5); box-shadow: 0 0 6px #0ff; }
+.hole.selected { background: rgba(255, 100, 0, 0.7); box-shadow: 0 0 10px #f80; }
+.hole.connected { background: rgba(255, 255, 255, 0.2); }
+.hole.net-highlight { background: rgba(255, 242, 0, 0.7); box-shadow: 0 0 10px #ffe300; }
+
+/* DC power terminals should be visible at all times (two rows). */
+.hole.dc-hole {
+    background: rgba(0, 0, 0, 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.46);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.55) inset;
+}
+.hole.dc-hole:hover {
+    background: rgba(0, 255, 255, 0.6);
+    box-shadow: 0 0 8px #0ff;
+}
+
+/* Switches/Buttons invisible wrappers over the photo components */
+.switch-hitbox, .btn-hitbox, .ic-hitbox { background: rgba(255, 255, 255, 0.0); cursor: pointer; border-radius: 2px;}
+.switch-hitbox:hover, .btn-hitbox:hover, .ic-hitbox:hover { background: rgba(255, 255, 255, 0.15); box-shadow: 0 0 5px rgba(255,255,255,0.4); }
+
+/* Realistic LEDs */
+.led-glow { width: 1.0%; aspect-ratio: 1; border-radius: 50%; opacity: 0; transition: opacity 0.05s; pointer-events: none; }
+.led-glow.red { background: radial-gradient(circle, #ffaaaa, #ff0000); box-shadow: 0 0 10px #ff0000, 0 0 15px rgba(255,0,0,0.6); }
+.led-glow.green { background: radial-gradient(circle, #aaffaa, #00ff00); box-shadow: 0 0 10px #00ff00, 0 0 15px rgba(0,255,0,0.6); }
+.led-glow.on { opacity: 0.95; }
+
+/* 7-Segment SVG */
+.seven-seg { width: 3.5%; height: 6.5%; opacity: 0.9; }
+.seg-line { fill: transparent; stroke: transparent; transition: fill 0.05s; }
+.seven-seg .seg-line.on { fill: #ff1111; stroke: #ff1111; filter: drop-shadow(0 0 5px #ff0000); }
+
+/* Placed IC generated visual overlaying empty sockets in the photo */
+.ic-placed { 
+    position: absolute; background: linear-gradient(135deg, #1f1f1f, #111111); border: 1px solid #000;
+    color: #999; display: flex; align-items: center; justify-content: center; font-family: monospace;
+    font-size: 0.7vw; box-shadow: 0 5px 8px rgba(0,0,0,0.9), inset 0 1px 1px rgba(255,255,255,0.2);
+    border-radius: 2px; pointer-events: auto; writing-mode: vertical-lr; text-orientation: mixed; user-select: none;
+}
+.ic-placed .notch { position: absolute; top:0; left: 50%; transform: translateX(-50%); width: 25%; height: 5%; background: #000; border-radius: 0 0 4px 4px; box-shadow: inset 0 2px 2px rgba(0,0,0,0.9); }
+
+/* Edit Alignment Mode Overrides */
+.edit-mode .hole, .edit-mode .switch-hitbox, .edit-mode .btn-hitbox, .edit-mode .ic-hitbox { 
+    background: rgba(0, 255, 0, 0.25) !important; 
+    border: 1px solid lime; 
+    cursor: move !important;
+}
+.edit-mode .seven-seg { background: rgba(0, 0, 255, 0.3) !important; border: 1px solid blue; }
+.edit-mode .seven-seg.selected-display { box-shadow: 0 0 0 2px #00e5ff, 0 0 14px rgba(0, 229, 255, 0.8); }
+.edit-mode .led-glow { opacity: 0.6; background: rgba(255, 0, 255, 0.6); display: block; border: 1px dashed magenta; pointer-events:auto;}
+.dragging { opacity: 0.4; z-index: 1000; box-shadow: 0 0 20px white !important; }
+
+/* Toolbar Defaults */
+#toolbar { display: flex; gap: 10px; flex-wrap: wrap; background: #262729; padding: 12px 18px; border-radius: 6px; border: 1px solid #333; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.5);}
+.tool-btn { padding: 9px 15px; background: #3a3f45; color: white; border: 1px solid #4a5057; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 13px; transition: 0.1s ease; }
+.tool-btn:hover { background: #4b5259; }
+.tool-btn.active { background: #1d61b6; border-color: #3b88e6; text-shadow: 0 1px 1px rgba(0,0,0,0.5); }
+.status-text { color: #00ffaa; font-family: ui-monospace, monospace; font-size: 14px; margin-left: auto; letter-spacing: 0.5px; font-weight:bold;}
+.editor-btn { background: #ab47bc; border-color: #8e24aa; margin-left: auto; margin-right: 15px;}
+
+.ic-picker-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(6, 9, 13, 0.78);
+    padding: 16px;
+}
+
+.ic-picker-dialog {
+    width: min(980px, 96vw);
+    max-height: min(86vh, 860px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #14181d;
+    border: 1px solid #2c3744;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    padding: 12px;
+}
+
+.ic-picker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.ic-picker-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #ecf3ff;
+}
+
+.ic-picker-close {
+    border: 1px solid #435267;
+    background: #2d3847;
+    color: #fff;
+    border-radius: 6px;
+    font-size: 14px;
+    padding: 4px 10px;
+    cursor: pointer;
+}
+
+.ic-picker-close:hover { background: #3a495c; }
+
+.ic-picker-search {
+    width: 100%;
+    border: 1px solid #364250;
+    background: #0f141a;
+    color: #d8e0ea;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.ic-picker-grid {
+    overflow: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 10px;
+    padding: 2px;
+}
+
+.ic-picker-card {
+    text-align: left;
+    border: 1px solid #334152;
+    background: #171e26;
+    color: #dce5f0;
+    border-radius: 9px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.ic-picker-card:hover {
+    border-color: #4f80c3;
+    background: #1d2732;
+}
+
+.ic-picker-chip {
+    height: 34px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-weight: 700;
+    color: #bcc9d8;
+    border: 1px solid #0d1117;
+    background: linear-gradient(135deg, #212831, #0f1318);
+}
+
+.ic-picker-title {
+    font-weight: 700;
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+.ic-picker-desc {
+    font-size: 12px;
+    color: #a8b4c2;
+    margin-bottom: 8px;
+}
+
+.ic-picker-pins summary {
+    font-size: 12px;
+    color: #c4d2e2;
+    cursor: pointer;
+}
+
+.ic-picker-pins ul {
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+    max-height: 130px;
+    overflow: auto;
+    border-top: 1px solid #2e3947;
+}
+
+.ic-picker-pins li {
+    display: grid;
+    grid-template-columns: 30px 1fr auto;
+    gap: 8px;
+    align-items: center;
+    font-size: 11px;
+    padding: 4px 0;
+    border-bottom: 1px solid #25303d;
+}
+
+.ic-picker-pins li span { color: #9eb4cb; }
+.ic-picker-pins li strong { color: #e2ebf6; font-weight: 600; }
+.ic-picker-pins li em { color: #88a6c3; font-style: normal; text-transform: uppercase; font-size: 10px; }
+
+.ic-picker-empty { color: #94a8be; font-size: 12px; margin: 6px 0 0; }
+
+/* AI Assistant Styles */
+.ai-panel {
+    position: fixed; bottom: 20px; right: 20px; width: 380px; height: 500px;
+    background: #14181d; border: 1px solid #2c3744; border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7); display: flex; flex-direction: column;
+    z-index: 6000; transition: transform 0.3s ease, opacity 0.3s ease; overflow: hidden;
+}
+.ai-panel.hidden { transform: translateY(150%); opacity: 0; pointer-events: none; }
+.ai-header {
+    background: linear-gradient(135deg, #e91e63, #9c27b0); padding: 12px 16px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: white; font-weight: bold; font-family: sans-serif;
+}
+.ai-close {
+    background: rgba(0,0,0,0.2); border: none; color: white; cursor: pointer;
+    border-radius: 4px; padding: 4px 8px;
+}
+.ai-close:hover { background: rgba(0,0,0,0.4); }
+.ai-body {
+    flex: 1; overflow-y: auto; padding: 12px; display: flex;
+    flex-direction: column; gap: 10px; background: #10141a; font-family: sans-serif;
+}
+.ai-msg {
+    max-width: 85%; padding: 10px 14px; border-radius: 8px; font-size: 14px;
+    line-height: 1.5; word-wrap: break-word; white-space: pre-wrap;
+}
+.ai-msg.bot { background: #1e2630; color: #e2ebf6; align-self: flex-start; border-left: 3px solid #e91e63; }
+.ai-msg.user { background: #2b5278; color: white; align-self: flex-end; border-right: 3px solid #4fc3f7; }
+.ai-input-area {
+    display: flex; padding: 10px; background: #14181d; border-top: 1px solid #2c3744; gap: 8px;
+}
+.ai-input-area input {
+    flex: 1; background: #1a2027; border: 1px solid #364250; color: white;
+    padding: 8px 12px; border-radius: 6px; outline: none; font-family: sans-serif;
+}
+.ai-input-area input:focus { border-color: #e91e63; }
+.ai-input-area button {
+    background: #e91e63; border: none; color: white; padding: 8px 16px;
+    border-radius: 6px; cursor: pointer; font-weight: bold;
+}
+.ai-input-area button:hover { background: #c2185b; }
+.ai-input-area button:disabled { background: #555; cursor: not-allowed; }
+.ai-setup { display: flex; flex-direction: column; gap: 8px; padding: 10px; }
+.ai-setup input { background: #1a2027; border: 1px solid #364250; color: white; padding: 8px 12px; border-radius: 6px; margin-bottom: 8px;}
+
+/* Markdown Styling overrides inside Chat */
+.markdown-body table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 10px; }
+.markdown-body th, .markdown-body td { border: 1px solid #4fc3f7; padding: 6px; text-align: center; }
+.markdown-body th { background: #0b151f; color: #4fc3f7; }
+.markdown-body pre { background: #14181d; padding: 10px; border-radius: 6px; overflow-x: auto; margin: 5px 0; }
+.markdown-body code { background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; font-family: monospace; color: #e91e63; }
