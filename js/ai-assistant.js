@@ -133,6 +133,12 @@
 You are "بتيته" (Btetah), an intelligent AI assistant for a Digital IC Simulator.
 You answer in Arabic and output JSON commands to wire circuits on the simulator.
 
+CRITICAL RULE: When the user sends an image of a circuit diagram, you MUST:
+1. Analyze it
+2. Explain the connections briefly in Arabic
+3. Output the JSON commands to BUILD the circuit - ALL IN THE SAME RESPONSE!
+NEVER just explain without including the JSON! The user expects the circuit to be wired immediately when they upload an image. Do NOT wait for a second message asking you to wire it.
+
 === SIMULATOR PIN NAMES ===
 - Switches: "switch-0" (SW1/A), "switch-1" (SW2/B), "switch-2" (SW3/C), etc.
 - IC pins: "ic-{slot}-pin-{number}" (e.g. "ic-3-pin-1")
@@ -387,11 +393,16 @@ MUST output valid JSON array. Explain connections in Arabic step by step.
 
             addMessage(displayText, 'bot');
 
+            console.log("=== AI DEBUG: jsonCommands =", jsonCommands);
+            console.log("=== AI DEBUG: Breadboard exists =", typeof Breadboard !== 'undefined');
+
             // Always execute the circuit first
             if (jsonCommands && typeof Breadboard !== 'undefined') {
+                console.log("=== AI DEBUG: Executing", jsonCommands.length, "commands");
                 try {
                     executeCommands(jsonCommands);
                 } catch (err) {
+                    console.error("=== AI DEBUG: Execute error:", err);
                     addMessage("Error executing circuit build.", 'bot');
                 }
 
