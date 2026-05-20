@@ -245,6 +245,218 @@ var ICLibrary = {
         }
     },
 
+    /* 74138 - 3-to-8 Line Decoder/Demultiplexer */
+    '74138': {
+        name: '74138',
+        description: '3-to-8 Line Decoder',
+        pins: 16,
+        pinout: [
+            { pin: 1,  name: 'A',   type: 'input' },
+            { pin: 2,  name: 'B',   type: 'input' },
+            { pin: 3,  name: 'C',   type: 'input' },
+            { pin: 4,  name: 'G2A', type: 'input' },
+            { pin: 5,  name: 'G2B', type: 'input' },
+            { pin: 6,  name: 'G1',  type: 'input' },
+            { pin: 7,  name: 'Y7',  type: 'output' },
+            { pin: 8,  name: 'GND', type: 'power' },
+            { pin: 9,  name: 'Y6',  type: 'output' },
+            { pin: 10, name: 'Y5',  type: 'output' },
+            { pin: 11, name: 'Y4',  type: 'output' },
+            { pin: 12, name: 'Y3',  type: 'output' },
+            { pin: 13, name: 'Y2',  type: 'output' },
+            { pin: 14, name: 'Y1',  type: 'output' },
+            { pin: 15, name: 'Y0',  type: 'output' },
+            { pin: 16, name: 'VCC', type: 'power' }
+        ],
+        simulate: function(pins) {
+            // Enable: G1=HIGH, G2A=LOW, G2B=LOW
+            var enabled = pins[6] && !pins[4] && !pins[5];
+            // All outputs HIGH (inactive) by default (active LOW)
+            pins[15] = 1; pins[14] = 1; pins[13] = 1; pins[12] = 1;
+            pins[11] = 1; pins[10] = 1; pins[9] = 1; pins[7] = 1;
+            if (enabled) {
+                var addr = (pins[1] ? 1 : 0) | ((pins[2] ? 1 : 0) << 1) | ((pins[3] ? 1 : 0) << 2);
+                var outPins = [15, 14, 13, 12, 11, 10, 9, 7]; // Y0-Y7
+                outPins[addr] && (pins[outPins[addr]] = 0); // Active LOW
+            }
+            return pins;
+        }
+    },
+
+    /* 74139 - Dual 2-to-4 Line Decoder/Demultiplexer */
+    '74139': {
+        name: '74139',
+        description: 'Dual 2-to-4 Line Decoder',
+        pins: 16,
+        pinout: [
+            { pin: 1,  name: '1E',  type: 'input' },
+            { pin: 2,  name: '1A0', type: 'input' },
+            { pin: 3,  name: '1A1', type: 'input' },
+            { pin: 4,  name: '1Y0', type: 'output' },
+            { pin: 5,  name: '1Y1', type: 'output' },
+            { pin: 6,  name: '1Y2', type: 'output' },
+            { pin: 7,  name: '1Y3', type: 'output' },
+            { pin: 8,  name: 'GND', type: 'power' },
+            { pin: 9,  name: '2Y3', type: 'output' },
+            { pin: 10, name: '2Y2', type: 'output' },
+            { pin: 11, name: '2Y1', type: 'output' },
+            { pin: 12, name: '2Y0', type: 'output' },
+            { pin: 13, name: '2A1', type: 'input' },
+            { pin: 14, name: '2A0', type: 'input' },
+            { pin: 15, name: '2E',  type: 'input' },
+            { pin: 16, name: 'VCC', type: 'power' }
+        ],
+        simulate: function(pins) {
+            // Decoder 1: Enable=1E(pin1) active LOW
+            var out1 = [4, 5, 6, 7]; // 1Y0-1Y3
+            out1.forEach(p => pins[p] = 1); // all HIGH (inactive)
+            if (!pins[1]) {
+                var addr1 = (pins[2] ? 1 : 0) | ((pins[3] ? 1 : 0) << 1);
+                pins[out1[addr1]] = 0;
+            }
+            // Decoder 2: Enable=2E(pin15) active LOW
+            var out2 = [12, 11, 10, 9]; // 2Y0-2Y3
+            out2.forEach(p => pins[p] = 1);
+            if (!pins[15]) {
+                var addr2 = (pins[14] ? 1 : 0) | ((pins[13] ? 1 : 0) << 1);
+                pins[out2[addr2]] = 0;
+            }
+            return pins;
+        }
+    },
+
+    /* 7442 - BCD to Decimal Decoder (4-to-10 line) */
+    '7442': {
+        name: '7442',
+        description: 'BCD to Decimal Decoder',
+        pins: 16,
+        pinout: [
+            { pin: 1,  name: 'Y0',  type: 'output' },
+            { pin: 2,  name: 'Y1',  type: 'output' },
+            { pin: 3,  name: 'Y2',  type: 'output' },
+            { pin: 4,  name: 'Y3',  type: 'output' },
+            { pin: 5,  name: 'Y4',  type: 'output' },
+            { pin: 6,  name: 'Y5',  type: 'output' },
+            { pin: 7,  name: 'Y6',  type: 'output' },
+            { pin: 8,  name: 'GND', type: 'power' },
+            { pin: 9,  name: 'Y7',  type: 'output' },
+            { pin: 10, name: 'Y8',  type: 'output' },
+            { pin: 11, name: 'Y9',  type: 'output' },
+            { pin: 12, name: 'D',   type: 'input' },
+            { pin: 13, name: 'C',   type: 'input' },
+            { pin: 14, name: 'B',   type: 'input' },
+            { pin: 15, name: 'A',   type: 'input' },
+            { pin: 16, name: 'VCC', type: 'power' }
+        ],
+        simulate: function(pins) {
+            var bcd = (pins[15] ? 1 : 0) | ((pins[14] ? 1 : 0) << 1) | ((pins[13] ? 1 : 0) << 2) | ((pins[12] ? 1 : 0) << 3);
+            var outPins = [1, 2, 3, 4, 5, 6, 7, 9, 10, 11]; // Y0-Y9
+            outPins.forEach(p => pins[p] = 1); // all HIGH (inactive)
+            if (bcd <= 9) {
+                pins[outPins[bcd]] = 0; // Active LOW
+            }
+            return pins;
+        }
+    },
+
+    /* 74148 - 8-to-3 Priority Encoder */
+    '74148': {
+        name: '74148',
+        description: '8-to-3 Priority Encoder',
+        pins: 16,
+        pinout: [
+            { pin: 1,  name: 'I4',  type: 'input' },
+            { pin: 2,  name: 'I5',  type: 'input' },
+            { pin: 3,  name: 'I6',  type: 'input' },
+            { pin: 4,  name: 'I7',  type: 'input' },
+            { pin: 5,  name: 'EI',  type: 'input' },
+            { pin: 6,  name: 'A2',  type: 'output' },
+            { pin: 7,  name: 'A1',  type: 'output' },
+            { pin: 8,  name: 'GND', type: 'power' },
+            { pin: 9,  name: 'A0',  type: 'output' },
+            { pin: 10, name: 'I0',  type: 'input' },
+            { pin: 11, name: 'I1',  type: 'input' },
+            { pin: 12, name: 'I2',  type: 'input' },
+            { pin: 13, name: 'I3',  type: 'input' },
+            { pin: 14, name: 'GS',  type: 'output' },
+            { pin: 15, name: 'EO',  type: 'output' },
+            { pin: 16, name: 'VCC', type: 'power' }
+        ],
+        simulate: function(pins) {
+            // All inputs/outputs are active LOW
+            // EI (pin5) must be LOW to enable
+            pins[9] = 1; pins[7] = 1; pins[6] = 1; // A0,A1,A2 HIGH (inactive)
+            pins[14] = 1; // GS HIGH (no valid input)
+            pins[15] = 1; // EO HIGH
+            if (!pins[5]) { // EI enabled (LOW)
+                var inputPins = [10, 11, 12, 13, 1, 2, 3, 4]; // I0-I7
+                var highest = -1;
+                for (var i = 7; i >= 0; i--) {
+                    if (!inputPins[i] || !pins[inputPins[i]]) { // Active LOW input
+                        highest = i;
+                        break;
+                    }
+                }
+                if (highest >= 0) {
+                    // Output inverted binary (active LOW)
+                    pins[9] = (highest & 1) ? 0 : 1;  // A0
+                    pins[7] = (highest & 2) ? 0 : 1;  // A1
+                    pins[6] = (highest & 4) ? 0 : 1;  // A2
+                    pins[14] = 0; // GS LOW = valid output
+                } else {
+                    pins[15] = 0; // EO LOW = no input active, cascade enable
+                }
+            }
+            return pins;
+        }
+    },
+
+    /* 74147 - 10-to-4 Priority Encoder (BCD) */
+    '74147': {
+        name: '74147',
+        description: '10-to-4 Priority Encoder',
+        pins: 16,
+        pinout: [
+            { pin: 1,  name: 'I4',  type: 'input' },
+            { pin: 2,  name: 'I5',  type: 'input' },
+            { pin: 3,  name: 'I6',  type: 'input' },
+            { pin: 4,  name: 'I7',  type: 'input' },
+            { pin: 5,  name: 'I8',  type: 'input' },
+            { pin: 6,  name: 'A2',  type: 'output' },
+            { pin: 7,  name: 'A1',  type: 'output' },
+            { pin: 8,  name: 'GND', type: 'power' },
+            { pin: 9,  name: 'A0',  type: 'output' },
+            { pin: 10, name: 'I9',  type: 'input' },
+            { pin: 11, name: 'I1',  type: 'input' },
+            { pin: 12, name: 'I2',  type: 'input' },
+            { pin: 13, name: 'I3',  type: 'input' },
+            { pin: 14, name: 'A3',  type: 'output' },
+            { pin: 15, name: 'NC',  type: 'nc' },
+            { pin: 16, name: 'VCC', type: 'power' }
+        ],
+        simulate: function(pins) {
+            // All inputs active LOW, outputs active LOW (inverted BCD)
+            // No I0 input - assumed always HIGH (inactive)
+            pins[9] = 1; pins[7] = 1; pins[6] = 1; pins[14] = 1; // All outputs HIGH (= BCD 0)
+            var inputPins = [0, 11, 12, 13, 1, 2, 3, 4, 5, 10]; // I0(none), I1-I9
+            var highest = 0;
+            for (var i = 9; i >= 1; i--) {
+                if (inputPins[i] && !pins[inputPins[i]]) { // Active LOW
+                    highest = i;
+                    break;
+                }
+            }
+            if (highest > 0) {
+                // Output inverted BCD (active LOW)
+                pins[9]  = (highest & 1) ? 0 : 1;  // A0
+                pins[7]  = (highest & 2) ? 0 : 1;  // A1
+                pins[6]  = (highest & 4) ? 0 : 1;  // A2
+                pins[14] = (highest & 8) ? 0 : 1;  // A3
+            }
+            return pins;
+        }
+    },
+
     /* 7447 - BCD to 7-Segment Decoder */
     '7447': {
         name: '7447',
